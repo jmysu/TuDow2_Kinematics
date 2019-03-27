@@ -5,8 +5,8 @@ My Robot TuDow2 simulation w/ Kinematics <br/> <br/>
 茶壺位置 是用 __老歐的餘弦定理__ 算出來的！(2-DOF Forward Kinematics)<br/>
 如果位置算錯了 那可能要叫他起來 說明白講清楚！！！<br/><br/>
  
-![myTuDow2 Simulation](gif/TuDow2_0327.gif)  
-![Direct Kinematics 3DoF](gif/DirectKinematics3DoF.png)
+![myTuDow2 Simulation](gif/TuDow2_0327.gif)  <br/><br/>
+![Direct Kinematics 3DoF](gif/DirectKinematic3DoF.png)<br/> 
 ![Inverse Kinematics 3DoF](gif/InverseKinematics3DoF.png)
  
 ### References

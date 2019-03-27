@@ -10,7 +10,8 @@ My Robot TuDow2 simulation w/ Kinematics <br/> <br/>
 ### References
   - [libQGLViewer](http://libqglviewer.com/)
   - [QT GLWidget Teapot](https://github.com/WispProxy/OpenGL-Teapot-based-on-Qt-Cpp)
-  - [Forward Kinematics](https://appliedgo.net/roboticarm/)
+  - [Forward Kinematics, Arm Navigation](https://pythonrobotics.readthedocs.io/en/latest/modules/arm_navigation.html)
+  - [Inverse Kinematics, Let’s write some Go to make it serve your five o’clock tea.](https://appliedgo.net/roboticarm/)
   - [歐幾里德 餘弦定理 Law of Cosines](https://en.wikipedia.org/wiki/Law_of_cosines)
   
   <br/>
@@ -21,4 +22,4 @@ My Robot TuDow2 simulation w/ Kinematics <br/> <br/>
   
 ### To Do:
   - Add Inverse Kinematics
-  - Add message to connect to Motor Controller
+  - Add link to connect to Motor Controller

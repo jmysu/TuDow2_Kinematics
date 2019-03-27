@@ -2,7 +2,7 @@
 My Robot RuDow2 simulation w/ Kinematics
  
  
-![myTuDow2 Simulation](gif/TuDow0327.gif)  
+![myTuDow2 Simulation](gif/TuDow2_0327.gif)  
  
 ### References
   - [libQGLViewer](http://libqglviewer.com/)

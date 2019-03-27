@@ -7,7 +7,8 @@ My Robot TuDow2 simulation w/ Kinematics <br/> <br/>
  
 ![myTuDow2 Simulation](gif/TuDow2_0327.gif)  <br/><br/>
 ![Direct Kinematics 3DoF](gif/DirectKinematic3DoF.png)<br/> 
-![Inverse Kinematics 3DoF](gif/InverseKinematics3DoF.png)
+![Inverse Kinematics 3DoF](gif/InverseKinematics3DoF.png)<br/> 
+![](gif/FinalIK3DoF.png) <br/>
  
 ### References
   - [libQGLViewer](http://libqglviewer.com/)

@@ -6,8 +6,8 @@ My Robot TuDow2 simulation w/ Kinematics <br/> <br/>
 如果位置算錯了 那可能要叫他起來 說明白講清楚！！！<br/><br/>
  
 ![myTuDow2 Simulation](gif/TuDow2_0327.gif)  <br/><br/>
-![Direct Kinematics 3DoF](gif/DirectKinematic3DoF.png| width=480)<br/> 
-![Inverse Kinematics 3DoF](gif/InverseKinematics3DoF.png| width=480)
+![Direct Kinematics 3DoF](gif/DirectKinematic3DoF.png)<br/> 
+![Inverse Kinematics 3DoF](gif/InverseKinematics3DoF.png)
  
 ### References
   - [libQGLViewer](http://libqglviewer.com/)

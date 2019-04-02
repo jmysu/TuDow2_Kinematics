@@ -8,5 +8,5 @@ Inverse Kinematics on TuDow2 <br/> <br/>
 <br/>
  
 ### References
-  - [Robots Inverse Kinematics (YouTube)](https://www.youtube.com/watch?v=D93iQVoSScQ&t)
+  - [Robotics Inverse Kinematics (YouTube)](https://www.youtube.com/watch?v=D93iQVoSScQ&t)
  

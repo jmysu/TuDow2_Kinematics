@@ -4,7 +4,12 @@ My Robot TuDow2 simulation w/ Kinematics <br/> <br/>
 羅拔特 是用QT5+OpenGL+QGLViewer 畫出來的！<br/>
 茶壺位置(End Effector) 是用 __老歐的餘弦定理__ 算出來的！(2-DOF Forward/Inverse Kinematics)<br/>
 如果位置算錯了 那可能要叫他起來 說明白講清楚！！！<br/><br/>
- 
+
+Works feature:
+1) FK-Kinematics: Use Alpha, Beta, Gamma to control robot.
+2) IK-Kinematics: Use X,Y,Z to control the End-Effector position.
+
+
 Forward Kinematics Demo 
 ![myTuDow2 FK Simulation](gif/FK0403.gif)  <br/><br/>
 Inverse Kinematics Demo
@@ -29,5 +34,5 @@ Inverse Kinematics Demo
   - 0327 Upload
   
 ### To Do:
-  - Add Inverse Kinematics
+  - ~~Add Inverse Kinematics~~
   - Add link to connect to Motor Controller

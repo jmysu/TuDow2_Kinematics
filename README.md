@@ -5,8 +5,11 @@ My Robot TuDow2 simulation w/ Kinematics <br/> <br/>
 茶壺位置(End Effector) 是用 __老歐的餘弦定理__ 算出來的！(2-DOF Forward/Inverse Kinematics)<br/>
 如果位置算錯了 那可能要叫他起來 說明白講清楚！！！<br/><br/>
  
+Forward Kinematics Demo 
 ![myTuDow2 FK Simulation](gif/FK0403.gif)  <br/><br/>
+Inverse Kinematics Demo
 ![myTuDow2 IK Simulation](gif/IK0403.gif)  <br/><br/>
+<br/>
 ![EECS/MIT 6.141:Solutions for Kinematics 3DoF](gif/FK_IK_3DoF.png)<br/> 
 <br/>
  

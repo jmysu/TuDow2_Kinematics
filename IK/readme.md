@@ -3,8 +3,8 @@ Inverse Kinematics on TuDow2 <br/> <br/>
 
  
  
-![Drawing1](IK0402_1.png)  <br/><br/>
-![Drawing2](IK0402_2.png)<br/> 
+![Drawing1](IK0402.png)  <br/><br/>
+
 <br/>
  
 ### References

@@ -11,9 +11,9 @@ Works features:
 
 
 Forward Kinematics Demo 
-![myTuDow2 FK Simulation](gif/FK0403.gif)  <br/><br/>
+![myTuDow2 FK Simulation](gif/FK0405.gif)  <br/><br/>
 Inverse Kinematics Demo
-![myTuDow2 IK Simulation](gif/IK0403.gif)  <br/><br/>
+![myTuDow2 IK Simulation](gif/IK0405.gif)  <br/><br/>
 <br/>
 ![EECS/MIT 6.141:Solutions for Kinematics 3DoF](gif/FK_IK_3DoF.png)<br/> 
 <br/>
@@ -31,7 +31,8 @@ Inverse Kinematics Demo
   <br/>
 
 ### Change Logs:
-  - 0327 Upload
+  - 0327 Upload (IK not ready)
+  - 0405 Upload V0.9.0 (FK/IK ready)
   
 ### To Do:
   - ~~Add Inverse Kinematics~~

@@ -13,7 +13,7 @@ Works features:
 Forward Kinematics Demo 
 ![myTuDow2 FK Simulation](gif/FK0405.gif)  <br/><br/>
 Inverse Kinematics Demo
-![myTuDow2 IK Simulation](gif/IK0405.gif)  <br/><br/>
+![myTuDow2 IK Simulation](gif/IK0408.gif)  <br/><br/>
 <br/>
 ![EECS/MIT 6.141:Solutions for Kinematics 3DoF](gif/FK_IK_3DoF.png)<br/> 
 <br/>

@@ -1,4 +1,4 @@
-#include "gl_teapot.h"
+﻿#include "gl_teapot.h"
 
 using namespace qglviewer;
 
@@ -13,27 +13,30 @@ GL_Teapot::GL_Teapot()
  *
  * Drawing teapot
  */
-void GL_Teapot::draw()
+void GL_Teapot::draw(bool names)
 {
+    if (!bShow) return ; //No show!
+
+    if (names)
+      glPushName(E10_TEAPOT);
+
     glPushMatrix();
     glMultMatrixd(frameTeapot->matrix());
 
-    glScalef(fScale, fScale, fScale);
+    glScalef(fScale, fScale, fScale); //Scale size
     glEnable(GL_NORMALIZE);//To preventing lighting change after scaled!
     //------------------------------------------------------------------
-
-    /*
-     * Set specular & shininess using glMaterial (gold)
-     */
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specularColor);
-
-    /*
-     * Set ambient & diffuse color using glColorMaterial (gold)
-     */
-    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-    glColor3fv(diffuseColor);
-
+    if (bSelected) {
+        glColor3f(212.0f/255.0f, 175.0f/255.0f, 55.0f/255.0f); //Gold
+        }
+    else {
+        //Set specular & shininess using glMaterial (gold)
+        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specularColor);
+        //Set ambient & diffuse color using glColorMaterial (gold)
+        glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+        glColor3fv(diffuseColor);
+        }
     /*
      * Start to render polygons
      */
@@ -233,4 +236,7 @@ void GL_Teapot::draw()
     // Flush buffers to screen
     glFlush();
     glPopMatrix();
+
+    if (names)
+      glPopName();
 }

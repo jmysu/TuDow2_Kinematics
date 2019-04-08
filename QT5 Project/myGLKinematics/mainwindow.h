@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtGui>
 #include <QTimer>
+#include <QtMath>
 #include "gl_viewer.h"
 
 namespace Ui {
@@ -18,29 +19,55 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    Viewer *viewer;
-    void updateGroupboxKtitle();
 
-    float x,y,z;
-    QTimer *timer, *timerDemo;
+    Viewer viewer;
+
+    //Forward Kenematics related,
+    //Robot Alpha, Beta, Gamma
+    void updateGroupboxFK();
+    void FKabr2XYZ();
+    qreal rRobotAlpha, rRobotBeta, rRobotGamma;
+    void updateRobotByAlphaBetaGamma(qreal Alpha, qreal Beta, qreal Gamma);
+    void demoRobotAlphaBetaGamma();
+
+    //Inverse Kenematics related,
+    //Robot X,Y,Z (End-Effector Teapot postion)
+    void updateGroupboxIK();
+    void IKxy2A1A2(qreal x, qreal y, int *A1, int *A2);
+    int iRobotX, iRobotY, iRobotZ;
+    void updateTeapotByXYZ(qreal x, qreal y, qreal z);
+    void demoRobotXYZ();
+    bool bIKerror=false;
+
+    QTimer timerTeapot, timerDemo, timerRun;
+
+    void on_XYZ_Changed();
+
+    Vec v0, v1; //for XYZ go looping
+
+public slots:
+    void slotDemoTimeout();
+    void runRobotXYZ();
 
 private:
     Ui::MainWindow *ui;
 
-
 private slots:
-    //void on_horizontalSlider1_valueChanged(int value);
-    //void on_horizontalSlider2_valueChanged(int value);
-    //void on_horizontalSlider3_valueChanged(int value);
-    void on_horizontalSlider1_sliderMoved(int position);
-    void on_horizontalSlider2_sliderMoved(int position);
-    void on_horizontalSlider3_sliderMoved(int position);
+    void on_sliderAlpha_sliderMoved(int position);
+    void on_sliderBeta_sliderMoved(int position);
+    void on_sliderGamma_sliderMoved(int position);
 
     void on_radioButtonFK_toggled(bool checked);
     void on_radioButtonIK_toggled(bool checked);
 
 
     void on_checkBoxDemo_clicked();
+    void on_checkBoxTeapot_toggled(bool checked);
+    void on_sliderIK_X_sliderMoved(int position);
+    void on_sliderIK_Y_sliderMoved(int position);
+    void on_sliderIK_Z_sliderMoved(int position);
+
+    void on_pushButtonIKrun_clicked();
 };
 
 #endif // MAINWINDOW_H

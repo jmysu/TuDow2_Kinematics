@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 
  Copyright (C) 2002-2014 Gilles Debunne. All rights reserved.
 
@@ -73,25 +73,24 @@ void GL_Robot::draw(bool names) {
 
   // Robots' local frame
   glPushMatrix();
-  glMultMatrixd(frame[E0_BASE]->matrix());
-
 
   const float scale = 5.0f;
   glScalef(scale, scale, scale);
   //--------------------------------0
   //Base
   if (names)
-    glPushName(0);
-  setColor(0);
+    glPushName(E0_BASE);
+  glMultMatrixd(frame[E0_BASE]->matrix());
+  setColor(E0_BASE);
   drawBase();
   if (names)
     glPopName();
   //--------------------------------1
   //Arm1
   if (names)
-    glPushName(1);
+    glPushName(E1_ARM1);
   glMultMatrixd(frame[E1_ARM1]->matrix());
-  setColor(1);
+  setColor(E1_ARM1);
   drawJoint();
   drawArm1();
   if (names)
@@ -99,29 +98,19 @@ void GL_Robot::draw(bool names) {
   //--------------------------------2
   //Arm2
   if (names)
-    glPushName(2);
+    glPushName(E2_ARM2);
   glMultMatrixd(frame[E2_ARM2]->matrix());
-  setColor(2);
+  setColor(E2_ARM2);
   drawJoint();
   drawArm2();
   if (names)
     glPopName();
   //--------------------------------3
-  //Head
-/*  if (names)
-    glPushName(3);
-  glMultMatrixd(frame(3)->matrix());
-  setColor(3);
-  drawHead();
-  if (names)
-    glPopName();
-*/
-  //--------------------------------3
   //Claw
   if (names)
-    glPushName(3);
+    glPushName(E3_CLAW);
   glMultMatrixd(frame[E3_CLAW]->matrix());
-  setColor(3);
+  setColor(E3_CLAW);
   drawClaw();
   if (names)
     glPopName();
@@ -133,6 +122,7 @@ void GL_Robot::draw(bool names) {
   glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_dir);
 */
   glPopMatrix();
+
 }
 
 /*

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>965</width>
-    <height>616</height>
+    <width>1024</width>
+    <height>752</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,14 +21,14 @@
     <item>
      <widget class="QGroupBox" name="groupBox">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
       <property name="minimumSize">
        <size>
-        <width>300</width>
+        <width>250</width>
         <height>0</height>
        </size>
       </property>
@@ -50,6 +50,12 @@
        <string>Kinematics</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QGroupBox" name="groupBoxFK">
          <property name="enabled">
@@ -63,13 +69,13 @@
          </property>
          <property name="font">
           <font>
-           <pointsize>12</pointsize>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
          <property name="title">
-          <string>Forward</string>
+          <string>F-K</string>
          </property>
          <property name="flat">
           <bool>false</bool>
@@ -92,9 +98,9 @@
             <property name="font">
              <font>
               <family>Courier</family>
-              <pointsize>12</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
              </font>
             </property>
             <property name="text">
@@ -103,11 +109,13 @@
            </widget>
           </item>
           <item>
-           <widget class="QSlider" name="horizontalSlider1">
+           <widget class="QSlider" name="sliderAlpha">
             <property name="font">
              <font>
-              <family>Courier New</family>
+              <family>Courier</family>
               <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
              </font>
             </property>
             <property name="minimum">
@@ -117,7 +125,7 @@
              <number>180</number>
             </property>
             <property name="singleStep">
-             <number>45</number>
+             <number>15</number>
             </property>
             <property name="pageStep">
              <number>90</number>
@@ -130,6 +138,12 @@
             </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="invertedAppearance">
+             <bool>false</bool>
+            </property>
+            <property name="invertedControls">
+             <bool>true</bool>
             </property>
             <property name="tickPosition">
              <enum>QSlider::TicksAbove</enum>
@@ -150,9 +164,9 @@
             <property name="font">
              <font>
               <family>Courier</family>
-              <pointsize>12</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
              </font>
             </property>
             <property name="text">
@@ -161,11 +175,13 @@
            </widget>
           </item>
           <item>
-           <widget class="QSlider" name="horizontalSlider2">
+           <widget class="QSlider" name="sliderBeta">
             <property name="font">
              <font>
-              <family>Courier New</family>
+              <family>Courier</family>
               <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
              </font>
             </property>
             <property name="minimum">
@@ -175,7 +191,7 @@
              <number>180</number>
             </property>
             <property name="singleStep">
-             <number>45</number>
+             <number>15</number>
             </property>
             <property name="pageStep">
              <number>90</number>
@@ -205,9 +221,9 @@
             <property name="font">
              <font>
               <family>Courier</family>
-              <pointsize>12</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
              </font>
             </property>
             <property name="text">
@@ -216,11 +232,13 @@
            </widget>
           </item>
           <item>
-           <widget class="QSlider" name="horizontalSlider3">
+           <widget class="QSlider" name="sliderGamma">
             <property name="font">
              <font>
-              <family>Courier New</family>
+              <family>Courier</family>
               <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
              </font>
             </property>
             <property name="minimum">
@@ -228,6 +246,12 @@
             </property>
             <property name="maximum">
              <number>180</number>
+            </property>
+            <property name="singleStep">
+             <number>15</number>
+            </property>
+            <property name="pageStep">
+             <number>90</number>
             </property>
             <property name="value">
              <number>0</number>
@@ -251,15 +275,31 @@
          <property name="enabled">
           <bool>false</bool>
          </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>270</height>
+          </size>
+         </property>
          <property name="font">
           <font>
-           <pointsize>12</pointsize>
+           <family>Courier</family>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
          <property name="title">
-          <string>Inverse </string>
+          <string>I-K</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
          </property>
          <property name="checkable">
           <bool>false</bool>
@@ -268,6 +308,21 @@
           <bool>false</bool>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>12</number>
+          </property>
+          <property name="topMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>12</number>
+          </property>
+          <property name="bottomMargin">
+           <number>12</number>
+          </property>
           <item>
            <widget class="QLabel" name="labelIK_X">
             <property name="maximumSize">
@@ -278,8 +333,10 @@
             </property>
             <property name="font">
              <font>
-              <family>Courier New</family>
-              <pointsize>12</pointsize>
+              <family>Courier</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
              </font>
             </property>
             <property name="text">
@@ -288,24 +345,47 @@
            </widget>
           </item>
           <item>
-           <widget class="QSlider" name="horizontalSliderIK_X">
+           <widget class="QSlider" name="sliderIK_X">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="font">
              <font>
-              <family>Courier New</family>
+              <family>Courier</family>
               <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
              </font>
             </property>
             <property name="minimum">
-             <number>-180</number>
+             <number>-999</number>
             </property>
             <property name="maximum">
-             <number>180</number>
+             <number>999</number>
+            </property>
+            <property name="singleStep">
+             <number>1</number>
+            </property>
+            <property name="pageStep">
+             <number>100</number>
             </property>
             <property name="value">
              <number>0</number>
             </property>
+            <property name="tracking">
+             <bool>true</bool>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksAbove</enum>
+            </property>
+            <property name="tickInterval">
+             <number>250</number>
             </property>
            </widget>
           </item>
@@ -319,8 +399,10 @@
             </property>
             <property name="font">
              <font>
-              <family>Courier New</family>
-              <pointsize>12</pointsize>
+              <family>Courier</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
              </font>
             </property>
             <property name="text">
@@ -329,24 +411,47 @@
            </widget>
           </item>
           <item>
-           <widget class="QSlider" name="horizontalSliderIK_Y">
+           <widget class="QSlider" name="sliderIK_Y">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="font">
              <font>
-              <family>Courier New</family>
+              <family>Courier</family>
               <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
              </font>
             </property>
             <property name="minimum">
-             <number>-180</number>
+             <number>-999</number>
             </property>
             <property name="maximum">
-             <number>180</number>
+             <number>999</number>
+            </property>
+            <property name="singleStep">
+             <number>1</number>
+            </property>
+            <property name="pageStep">
+             <number>100</number>
             </property>
             <property name="value">
              <number>0</number>
             </property>
+            <property name="tracking">
+             <bool>true</bool>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksAbove</enum>
+            </property>
+            <property name="tickInterval">
+             <number>250</number>
             </property>
            </widget>
           </item>
@@ -360,8 +465,10 @@
             </property>
             <property name="font">
              <font>
-              <family>Courier New</family>
-              <pointsize>12</pointsize>
+              <family>Courier</family>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
              </font>
             </property>
             <property name="text">
@@ -370,18 +477,32 @@
            </widget>
           </item>
           <item>
-           <widget class="QSlider" name="horizontalSliderIK_Z">
+           <widget class="QSlider" name="sliderIK_Z">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="font">
              <font>
-              <family>Courier New</family>
+              <family>Courier</family>
               <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
              </font>
             </property>
             <property name="minimum">
-             <number>-180</number>
+             <number>0</number>
             </property>
             <property name="maximum">
-             <number>180</number>
+             <number>999</number>
+            </property>
+            <property name="singleStep">
+             <number>1</number>
+            </property>
+            <property name="pageStep">
+             <number>100</number>
             </property>
             <property name="value">
              <number>0</number>
@@ -395,6 +516,224 @@
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksAbove</enum>
+            </property>
+            <property name="tickInterval">
+             <number>125</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>260</width>
+              <height>64</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>260</width>
+              <height>64</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QGridLayout" name="gridLayout">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QSpinBox" name="spinBoxX">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>45</width>
+                 <height>16</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="minimum">
+                <number>-999</number>
+               </property>
+               <property name="maximum">
+                <number>999</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="spinBoxY">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>45</width>
+                 <height>16</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="minimum">
+                <number>-999</number>
+               </property>
+               <property name="maximum">
+                <number>999</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QSpinBox" name="spinBoxZ">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>45</width>
+                 <height>16</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="minimum">
+                <number>-999</number>
+               </property>
+               <property name="maximum">
+                <number>999</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QPushButton" name="pushButtonIKrun">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>48</width>
+                 <height>16</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Run</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" colspan="4">
+              <widget class="QLabel" name="labelIKstatus">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>300</width>
+                 <height>12</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Courier</family>
+                 <pointsize>10</pointsize>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>I-K Status</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
@@ -417,33 +756,39 @@
          <property name="font">
           <font>
            <family>Courier</family>
-           <pointsize>12</pointsize>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
          <property name="title">
-          <string>Target</string>
+          <string>Target / End Effector</string>
          </property>
          <widget class="QRadioButton" name="radioButtonFK">
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>30</y>
-            <width>251</width>
+            <y>20</y>
+            <width>281</width>
             <height>24</height>
            </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
           <property name="font">
            <font>
             <family>Courier</family>
-            <pointsize>10</pointsize>
+            <pointsize>8</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
           </property>
           <property name="text">
-           <string>Forward Kinematics (Robot)</string>
+           <string>Forward Kinematics (αβγ ⇒ XYZ)</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -453,31 +798,43 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>50</y>
-            <width>251</width>
+            <y>39</y>
+            <width>281</width>
             <height>24</height>
            </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
           <property name="font">
            <font>
             <family>Courier</family>
-            <pointsize>10</pointsize>
+            <pointsize>8</pointsize>
             <weight>50</weight>
             <bold>false</bold>
            </font>
           </property>
           <property name="text">
-           <string>Inverse Kinematics (Teapot)</string>
+           <string>Inverse Kinematics (XYZ ⇒ αβγ)</string>
           </property>
          </widget>
          <widget class="QCheckBox" name="checkBoxDemo">
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>80</y>
+            <y>70</y>
             <width>103</width>
             <height>24</height>
            </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
           <property name="font">
            <font>
@@ -493,10 +850,16 @@
           <property name="geometry">
            <rect>
             <x>140</x>
-            <y>80</y>
+            <y>72</y>
             <width>103</width>
             <height>24</height>
            </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
           <property name="font">
            <font>
@@ -506,6 +869,34 @@
           </property>
           <property name="text">
            <string>Crazy</string>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="checkBoxTeapot">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>95</y>
+            <width>301</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>Courier</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Show Target/Teapot</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </widget>
@@ -520,7 +911,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>965</width>
+     <width>1024</width>
      <height>22</height>
     </rect>
    </property>

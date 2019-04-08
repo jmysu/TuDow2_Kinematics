@@ -24,18 +24,34 @@
 #include <manipulatedCameraFrame.h>
 #include "gl_robot.h"
 #include "gl_teapot.h"
-
+#include "gl_particle.h"
 
 class Viewer : public QGLViewer {
 public:
-    qreal mfRotationRad[4]={M_PI_2,0,0,0};
+    GL_Robot myRobot;
+    GL_Teapot myTeapot;
+    qglviewer::Vec vPosScaledOldTeapot[3]; //3 old positions
 
-    GL_Robot *myRobot;
-    GL_Teapot *myTeapot;
+    const static int iParticleParts=100;
+    Particle *particle[iParticleParts];
+
+    void addInfo(QString s);
+    void clearInfo();
+    bool bShowInfo=false;
+    void keyPressEvent(QKeyEvent *e);
 
 protected:
   virtual void draw();
   virtual void init();
+  virtual void animate();
   virtual void drawWithNames();
   virtual void postSelection(const QPoint &point);
+  virtual QString helpString() const;
+
+private:
+  const static int iInfoLines=32;
+  qglviewer::Vec orig, dir, selectedPoint; //For mouse click, selection
+  void displayText();
+
+  QString sInfo[iInfoLines];
 };

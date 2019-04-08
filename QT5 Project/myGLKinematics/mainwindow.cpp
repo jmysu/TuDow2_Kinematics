@@ -1,4 +1,12 @@
-﻿#include "mainwindow.h"
+﻿/*
+ *  土豆2號仿生動力學 (TuDow2 Kinematics)
+ *
+ *  by Jimmy.Su, Apr.1, 2019
+ *
+ *  See https://github.com/jmysu/TuDow2_Kinematics
+ *
+ */
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "kinematics.h"
 #include "qglviewer.h"
@@ -11,101 +19,103 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->setWindowTitle("土豆2號 仿生動力學 (TuDow2 Kinematics)");
+    //this->setWindowTitle("土豆2號仿生動力學 (TuDow2 Kinematics)");
+    this->setWindowTitle(APP_NAME+QString(" V")+APP_VERSION);
 
-    viewer = new Viewer();
+    //Change default font for opengl
+    QFont font("Courier New");
+    font.setStyleHint(QFont::Monospace);
+    QApplication::setFont(font);
 
     QLayout *layout = ui->horizontalLayoutQGL;
-    layout->addWidget(viewer);
+    layout->addWidget(&viewer); //Add QGLViewer widget to layout
 
-    viewer->setGridIsDrawn();
-    viewer->setAxisIsDrawn();
+    viewer.setGridIsDrawn();
+    viewer.setAxisIsDrawn();
 
-    //viewer->camera()->frame()->setOrientation(Quaternion(qglviewer::Vec(1, 0.2, 0.2), M_PI/4));
-    Quaternion qc = viewer->camera()->frame()->rotation();
-    qDebug() << QString("Camera Rotation:(%1,%2,%3) %4°")
-             .arg(qc.axis().x)
-             .arg(qc.axis().y)
-             .arg(qc.axis().z)
-             .arg(qRadiansToDegrees(qc.angle()));
+    //Adjust camera range, orientation
+    viewer.camera()->frame()->setOrientation(Quaternion(qglviewer::Vec(1, 0.2, 0.2), M_PI/4)); //Init viewer in iso orientation
+    viewer.camera()->setSceneRadius(5);
+    viewer.camera()->fitSphere(Vec(0, 0, 3), 5);
+    viewer.show();
 
-    viewer->camera()->setSceneRadius(5);
-    //viewer->showEntireScene();
-    viewer->camera()->fitSphere(Vec(0, 0, 2), 5);
 
-    viewer->show();
-
-    qreal rBase = viewer->myRobot->radRotation[E0_BASE];
+    //Unselect Robot segment id
+    viewer.myRobot.idSelected = E4_NONE;
+    //Unselect id when FK slider released
+    connect(ui->sliderAlpha, &QSlider::sliderReleased, [=](){
+        viewer.myRobot.idSelected = E4_NONE;
+        viewer.myTeapot.bSelected = false;
+        viewer.update();
+        });
+    connect(ui->sliderBeta, &QSlider::sliderReleased, [=](){
+        viewer.myRobot.idSelected = E4_NONE;
+        viewer.myTeapot.bSelected = false;
+        viewer.update();
+        });
+    connect(ui->sliderGamma, &QSlider::sliderReleased, [=](){
+        viewer.myRobot.idSelected = E4_NONE;
+        viewer.myTeapot.bSelected = false;
+        viewer.update();
+        });
+    /*
+    //Unselect teapot when IK slider released
+    connect(ui->sliderIK_X, &QSlider::sliderReleased, [=](){
+        viewer.myTeapot.bSelected = false;
+        viewer.update();
+        });
+    connect(ui->sliderIK_Y, &QSlider::sliderReleased, [=](){
+        viewer.myTeapot.bSelected = false;
+        viewer.update();
+        });
+    connect(ui->sliderIK_Z, &QSlider::sliderReleased, [=](){
+        viewer.myTeapot.bSelected = false;
+        viewer.update();
+        });
+    */
+    qreal rBase = viewer.myRobot.radRotation[E0_BASE];
     qreal dBase = qRadiansToDegrees(rBase);
-    ui->horizontalSlider1->setRange(-180,180);
-    ui->horizontalSlider1->setValue(dBase);
+    rRobotAlpha = qRound(dBase);
+    ui->sliderAlpha->setRange(-180,180);
+    ui->sliderAlpha->setValue(static_cast<int>(rRobotAlpha));
 
-    qreal rArm1 = viewer->myRobot->radRotation[E1_ARM1];
+    qreal rArm1 = viewer.myRobot.radRotation[E1_ARM1];
     qreal dArm1 = qRadiansToDegrees(rArm1);
-    ui->horizontalSlider2->setRange(-180,180);
-    ui->horizontalSlider2->setValue(dArm1);
+    rRobotBeta  = qRound(dArm1);
+    ui->sliderBeta->setRange(-180,180);
+    ui->sliderBeta->setValue(static_cast<int>(rRobotBeta));
 
-    qreal rArm2 = viewer->myRobot->radRotation[E2_ARM2];
+    qreal rArm2 = viewer.myRobot.radRotation[E2_ARM2];
     qreal dArm2 = qRadiansToDegrees(rArm2);
-    ui->horizontalSlider3->setRange(-180,180);
-    ui->horizontalSlider3->setValue(dArm2);
-qDebug() << "Init slider123" << dBase << dArm1 << dArm2;
-on_horizontalSlider1_sliderMoved(dBase);
-on_horizontalSlider2_sliderMoved(dArm1);
-on_horizontalSlider3_sliderMoved(dArm2);
+    rRobotGamma= qRound(dArm2);
+    ui->sliderGamma->setRange(-180,180);
+    ui->sliderGamma->setValue(static_cast<int>(rRobotGamma));
 
     ui->radioButtonFK->setChecked(true);
     ui->radioButtonIK->setChecked(false);
+    on_radioButtonFK_toggled(true);
+    on_radioButtonFK_toggled(false);
 
-    ui->groupBoxFK->setEnabled(true);
-    ui->groupBoxIK->setEnabled(false);
 
-    //force teapot upward to World Zaxis
-    viewer->myTeapot->frameTeapot->setRotation(Quaternion(Vec(1.0, 0.0, 0.0), M_PI_2)); //on Xaxis @pi/2
-    viewer->update();
+    QTimer::singleShot(100, [=]() {//Single shot 100ms later, as the QGLViewer might not ready at startup
+        //Force teapot upward to World Zaxis
+        viewer.myTeapot.bSelected = false;
+        viewer.myTeapot.frameTeapot->setRotation(Quaternion(Vec(1.0, 0.0, 0.0), M_PI_2)); //on Xaxis @pi/2
 
-    //Unselect id when slider released
-    connect(ui->horizontalSlider1, &QSlider::sliderReleased, [=](){
-        viewer->myRobot->idSelected = E4_NONE;
-        viewer->update();
-        });
-    connect(ui->horizontalSlider2, &QSlider::sliderReleased, [=](){
-        viewer->myRobot->idSelected = E4_NONE;
-        viewer->update();
-        });
-    connect(ui->horizontalSlider3, &QSlider::sliderReleased, [=](){
-        viewer->myRobot->idSelected = E4_NONE;
-        viewer->update();
+        updateGroupboxFK();
+        FKabr2XYZ();        //Convert Alpha/Beta/Gamma to XYZ, update iRobotX,iRobotY,iRobtZ
+        updateGroupboxIK();
+
+        updateTeapotByXYZ(iRobotX, iRobotY, iRobotZ);
         });
 
-    Quaternion q = viewer->myTeapot->frameTeapot->rotation();
-    qDebug() << QString("Teapot Rotation:(%1,%2,%3) %4°")
-             .arg(q.axis().x)
-             .arg(q.axis().y)
-             .arg(q.axis().z)
-             .arg(qRadiansToDegrees(q.angle()));
+    //Connect timerDemo singal/slot
+    connect(&timerDemo, SIGNAL(timeout()), this, SLOT(slotDemoTimeout()));
 
-    //Do some fun--------------------------------
-    timer = new QTimer();
-    timer->start(100);
-    connect(timer, &QTimer::timeout, [=](){
-        //Change Axis
-        qglviewer::Vec axis;
-        //if (ui->radioButtonX->isChecked())
-        //    axis = qglviewer::Vec(1.0, 0.0, 0.0);
-        //else if (ui->radioButtonY->isChecked())
-        //    axis = qglviewer::Vec(0.0, 1.0, 0.0);
-        //else if (ui->radioButtonZ->isChecked())
-        //    axis = qglviewer::Vec(0.0, 0.0, 1.0);
-        axis = qglviewer::Vec(0.0, 1.0, 0.0);
-        //Rotate on Axis
-        viewer->myTeapot->frameTeapot->rotate(Quaternion(axis, -M_PI/10)); //- pi/10 per step
-        viewer->update();
-        });
-    //-----------------
+    //-------------------
+    //Validate Kinematics
     //testIK();
-    viewer->myRobot->idSelected = E4_NONE;
-    updateGroupboxKtitle();
+
 
 }
 
@@ -114,175 +124,175 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-/*
- * Tramsform from XY-plane to ZY-plane
- *
- *       Y                    X
- *       |                    |
- *       |                    |
- *   ----+----X    =>     ----+----Z
- *      /|                   /|
- *     / |                  / |
- *    Z  |                 Y  |
- *     (x,y,z)     =>       (z,x,y)
- *     (0,0,1)     =>       (1,0,0)
- *     (0,1,0)     =>       (0,0,1)
- *     (1,0,0)     =>       (0,1,0)
- *
- */
-void MainWindow::updateGroupboxKtitle()
+void MainWindow::updateGroupboxFK()
 {
 qDebug() << Q_FUNC_INFO;
-    qreal dBase= ui->horizontalSlider1->value();
-    qreal rBase= qDegreesToRadians(dBase);
-    qreal dT0  = ui->horizontalSlider2->value();
-    qreal rT0  = qDegreesToRadians(dT0);
-    qreal dT1  = ui->horizontalSlider3->value();
-    qreal rT1  = qDegreesToRadians(dT1);
 
-    qreal l0   = viewer->myRobot->fSegLen[E1_ARM1];
-    qreal l1   = viewer->myRobot->fSegLen[E2_ARM2];
+    int iAlpha = static_cast<int>(rRobotAlpha);
+    int iBeta  = static_cast<int>(rRobotBeta);
+    int iGamma = static_cast<int>(rRobotGamma);
 
-    //Calc position on ZY-plane
-    qreal z    = KposXfromAnglesRad(rT0, rT1, l0, l1);
-    qreal y    = KposYfromAnglesRad(rT0, rT1, l0, l1);
+    //Update F-K sliders
+    if (ui->sliderAlpha->value() != iAlpha)
+        ui->sliderAlpha->setValue(iAlpha);
+    if (ui->sliderBeta->value() != iBeta)
+        ui->sliderBeta->setValue(iBeta);
+    if (ui->sliderGamma->value() != iGamma)
+        ui->sliderGamma->setValue(iGamma);
 
-    //Calc x1/y1 after Base rotation
-    qreal xx = y*qSin(rBase);
-    qreal yy = -y*qCos(rBase);
-    qreal zz = z + viewer->myRobot->fSegLen[E0_BASE];
+    qreal alpha = rRobotAlpha/1000.0;
+    qreal beta  = rRobotBeta/1000.0;
+    qreal gamma = rRobotGamma/1000.0;
 
     QString text;
-    text.sprintf("Forward:(%+06.3f,%+06.3f,%+06.3f)", xx, yy, zz);
+    text.sprintf("%+06.3f,%+4d", alpha, iAlpha);
+    ui->labelBase->setText(QString("Base-α(Π,Φ):%1°").arg(text) );
+    text.sprintf("%+06.3f,%+4d", beta, iBeta);
+    ui->labelArm1->setText(QString("Arm1-β(Π,Φ):%1°").arg(text) );
+    text.sprintf("%+06.3f,%+4d", gamma, iGamma);
+    ui->labelArm2->setText(QString("Arm2-γ(Π,Φ):%1°").arg(text) );
+
+    //Update IK title with Alpha,Beta,Gamma
+    text.sprintf("I-K:α:%4d° β:%4d° γ:%4d°", iAlpha, iBeta, iGamma);
+    ui->groupBoxIK->setTitle(text);
+}
+
+void MainWindow::updateGroupboxIK()
+{
+qDebug() << Q_FUNC_INFO;
+
+    //Update I-K sliders
+    if (ui->sliderIK_X->value() != iRobotX)
+        ui->sliderIK_X->setValue(iRobotX);
+    if (ui->sliderIK_Y->value() != iRobotY)
+        ui->sliderIK_Y->setValue(iRobotY);
+    if (ui->sliderIK_Z->value() != iRobotZ)
+        ui->sliderIK_Z->setValue(iRobotZ);
+//qDebug() << "X" << iRobotX << ui->sliderIK_X->value();
+
+    qreal xx = iRobotX/1000.0;
+    qreal yy = iRobotY/1000.0;
+    qreal zz = iRobotZ/1000.0;
+
+    QString text;
+    text.sprintf("X:%+06.3f \t(%+06.3f)", xx, xx*5.0);
+    ui->labelIK_X->setText(text);
+    text.sprintf("Y:%+06.3f \t(%+06.3f)", yy, yy*5.0);
+    ui->labelIK_Y->setText(text);
+    text.sprintf("Z:%+06.3f \t(%+06.3f)", zz, zz*5.0);
+    ui->labelIK_Z->setText(text);
+
+    //Update FK title with XYZ
+    text.sprintf("F-K:(%+06.3f, %+06.3f, %+06.3f)", xx, yy, zz);
     ui->groupBoxFK->setTitle(text);
 
-    //Update teapot position
-    float fscale = viewer->myTeapot->fScale;
-    viewer->myTeapot->frameTeapot->setPosition(xx/fscale, yy/fscale, zz/fscale);
+    //Update spinbox
+    ui->spinBoxX->setValue(iRobotX);
+    ui->spinBoxY->setValue(iRobotY);
+    ui->spinBoxZ->setValue(iRobotZ);
 }
 
+
+
 /*
- *  Base on AxisZ
+ * GroupFK sliders movements
+ *      sliderAlpha on robot base
  *
-Letter   Description  Escape-Sequence β, Γ γ
--------------------------------------
-A  α     Alpha        \u0391
-B  β     Beta         \u0392
-Γ  γ     Gamma        \u0393
-Δ        Delta        \u0394
-Ε        Epsilon      \u0395
-Ζ        Zeta         \u0396
-Η        Eta          \u0397
-Θ        Theta        \u0398
-Ι        Iota         \u0399
-Κ        Kappa        \u039A
-Λ        Lambda       \u039B
-Μ        Mu           \u039C
-Ν        Nu           \u039D
-Ξ        Xi           \u039E
-Ο        Omicron      \u039F
-Π        Pi           \u03A0
-Ρ        Rho          \u03A1
-Σ        Sigma        \u03A3
-Τ        Tau          \u03A4
-Υ        Upsilon      \u03A5
-Φ        Phi          \u03A6
-Χ        Chi          \u03A7
-Ψ        Psi          \u03A8
-Ω        Omega        \u03A9
  */
-
-void MainWindow::on_horizontalSlider1_sliderMoved(int position)
+void MainWindow::on_sliderAlpha_sliderMoved(int position)
 {
-    int deg = position;
-    qDebug() << Q_FUNC_INFO << deg;
-    if (viewer) {
-        //teapot
-        //viewer->mfRotationRad[0] = fRad;
-        //viewer->myTeapot->frameTeapot->setRotation(Quaternion(qglviewer::Vec(1.0, 0.0, 0.0),fRad));
-
-        //update robot
-        qreal rBase = qDegreesToRadians((qreal)deg);
-        viewer->myRobot->frame[E0_BASE]->setRotation( Quaternion(viewer->myRobot->vecRotation[E0_BASE], rBase) );
-
-        if (ui->checkBoxDemo->isChecked())
-            viewer->myRobot->idSelected = E3_CLAW;
-        else
-            viewer->myRobot->idSelected = E0_BASE;
-        viewer->update();
-
-        //viewer->tudow.mfRotationRad[E0_TUDOW_BASE] = fRad;
-        //viewer->tudow.frame(E0_TUDOW_BASE)->setRotation(Quaternion(qglviewer::Vec(0.0, 0.0, 1.0), viewer->tudow.mfRotationRad[E0_TUDOW_BASE]));   //Z
-        //viewer->tudow.mSelectedId = E0_TUDOW_BASE;
-        //viewer->tudow.setColor(E0_TUDOW_BASE);
-
-        //update UI
-        ui->horizontalSlider1->setValue(deg);
-        QString text;
-        text.sprintf("%+06.3f,%+4d", rBase, deg);
-
-        ui->labelBase->setText(QString("Base-α(Π,Φ):%1°").arg(text) );
-
-        updateGroupboxKtitle();
+    qreal deg = position;
+    if ((ui->radioButtonFK->isChecked()) && (qApp->mouseButtons()==Qt::LeftButton) ) { //jump to step when LeftButton pressed
+        int iStep = ui->sliderAlpha->singleStep();
+        deg = (position/iStep)*iStep;
         }
+    if (rRobotAlpha == deg) return;
+    qDebug() << Q_FUNC_INFO << deg;
+
+
+    //update robot Base rotation
+    rRobotAlpha = deg;
+    if (ui->checkBoxDemo->isChecked())
+        viewer.myRobot.idSelected = E3_CLAW;
+    else
+        viewer.myRobot.idSelected = E0_BASE;
+
+    //rRobotAlpha, rRobotBeta, rRobotGamma changed
+    updateGroupboxFK();
+    updateRobotByAlphaBetaGamma(rRobotAlpha, rRobotBeta, rRobotGamma);
+    //Find XYZ by Forward Kinematics
+    FKabr2XYZ();
+    //iRobotX, iRobotY, iRobotZ changed!
+    updateGroupboxIK();
+    updateTeapotByXYZ(iRobotX, iRobotY, iRobotZ);
 }
 /*
- * Arm1 on AxisX
+ * GroupFK sliders movements
+ *      sliderBeat on Arm1 @AxisX
  */
-void MainWindow::on_horizontalSlider2_sliderMoved(int position)
+void MainWindow::on_sliderBeta_sliderMoved(int position)
 {
-    int deg = position;
-    qDebug() << Q_FUNC_INFO << deg;
-    if (viewer) {
-        //float fRad = (value/180.0f)*3.14f;
-        //viewer->mfRotationRad[0] = fRad;
-        //viewer->myTeapot->frameTeapot->setRotation(Quaternion(qglviewer::Vec(0.0, 1.0, 0.0), fRad));
-        //update robot
-        qreal rArm1 = qDegreesToRadians((qreal)deg);
-        viewer->myRobot->frame[E1_ARM1]->setRotation( Quaternion(viewer->myRobot->vecRotation[E1_ARM1], rArm1) );
-
-        if (ui->checkBoxDemo->isChecked())
-            viewer->myRobot->idSelected = E3_CLAW;
-        else
-            viewer->myRobot->idSelected = E1_ARM1;
-        viewer->update();
-
-        //update UI
-        ui->horizontalSlider2->setValue(deg);
-        QString text;
-        text.sprintf("%+06.3f,%+4d", rArm1, deg);
-        ui->labelArm1->setText(QString("Arm1-β(Π,Φ):%1°").arg(text) );
-        updateGroupboxKtitle();
+    qreal deg = position;
+    if ((ui->radioButtonFK->isChecked()) && (qApp->mouseButtons()==Qt::LeftButton) ) { //jump to step when LeftButton pressed
+        int iStep = ui->sliderAlpha->singleStep();
+        deg = (position/iStep)*iStep;
         }
+    if (rRobotBeta == deg) return;
+    qDebug() << Q_FUNC_INFO << deg;
+
+
+    //update robot
+    rRobotBeta = deg;
+    //qreal rArm1 = qDegreesToRadians(rRobotBeta);
+    //viewer.myRobot.frame[E1_ARM1]->setRotation( Quaternion(viewer.myRobot.vecRotation[E1_ARM1], rArm1) );
+    //update selection
+    if (ui->checkBoxDemo->isChecked())
+        viewer.myRobot.idSelected = E3_CLAW;
+    else
+        viewer.myRobot.idSelected = E1_ARM1;
+
+    //rRobotAlpha, rRobotBeta, rRobotGamma changed
+    updateGroupboxFK();
+    updateRobotByAlphaBetaGamma(rRobotAlpha, rRobotBeta, rRobotGamma);
+    //Find XYZ by Forward Kinematics
+    FKabr2XYZ();
+    //iRobotX, iRobotY, iRobotZ changed!
+    updateGroupboxIK();
+    updateTeapotByXYZ(iRobotX, iRobotY, iRobotZ);
 }
 /*
- * Arm2 on AxisX
+ * GroupFK sliders movements
+ *      sliderGamma on Arm2 @AxisX
  */
-void MainWindow::on_horizontalSlider3_sliderMoved(int position)
+void MainWindow::on_sliderGamma_sliderMoved(int position)
 {
-    int deg = position;
-    qDebug() << Q_FUNC_INFO << deg;
-    if (viewer) {
-        //float fRad = (value/180.0f)*3.14f;
-        //viewer->mfRotationRad[0] = fRad;
-        //viewer->myTeapot->frameTeapot->setRotation(Quaternion(qglviewer::Vec(0.0, 0.0, 1.0), fRad));
-        //update robot
-        qreal rArm2 = qDegreesToRadians((qreal)deg);
-        viewer->myRobot->frame[E2_ARM2]->setRotation( Quaternion(viewer->myRobot->vecRotation[E2_ARM2], rArm2) );
-
-        if (ui->checkBoxDemo->isChecked())
-            viewer->myRobot->idSelected = E3_CLAW;
-        else
-            viewer->myRobot->idSelected = E2_ARM2;
-        viewer->update();
-
-        //update UI
-        ui->horizontalSlider3->setValue(deg);
-        QString text;
-        text.sprintf("%+06.3f,%+4d", rArm2, deg);
-        ui->labelArm2->setText(QString("Arm2-γ(Π,Φ):%1°").arg(text) );
-        updateGroupboxKtitle();
+    qreal deg = position;
+    if ((ui->radioButtonFK->isChecked()) && (qApp->mouseButtons()==Qt::LeftButton) ) { //jump to step when LeftButton pressed
+        int iStep = ui->sliderAlpha->singleStep();
+        deg = (position/iStep)*iStep;
         }
+    if (rRobotGamma == deg) return;
+    qDebug() << Q_FUNC_INFO << deg;
+
+
+    //update robot
+    rRobotGamma = deg;
+    //qreal rArm2 = qDegreesToRadians(rRobotGamma);
+    //viewer.myRobot.frame[E2_ARM2]->setRotation( Quaternion(viewer.myRobot.vecRotation[E2_ARM2], rArm2) );
+    //update selection
+    if (ui->checkBoxDemo->isChecked())
+        viewer.myRobot.idSelected = E3_CLAW;
+    else
+        viewer.myRobot.idSelected = E2_ARM2;
+
+    //rRobotAlpha, rRobotBeta, rRobotGamma changed
+    updateGroupboxFK();
+    updateRobotByAlphaBetaGamma(rRobotAlpha, rRobotBeta, rRobotGamma);
+    //Find XYZ by Forward Kinematics
+    FKabr2XYZ();
+    //iRobotX, iRobotY, iRobotZ changed!
+    updateGroupboxIK();
+    updateTeapotByXYZ(iRobotX, iRobotY, iRobotZ);
 }
 
 
@@ -290,15 +300,45 @@ void MainWindow::on_radioButtonFK_toggled(bool checked)
 {
     if (checked) {
         ui->groupBoxFK->setEnabled(true);
+        ui->groupBoxFK->setStyleSheet("QGroupBox{font:10pt\"Courier\";color:black};");
+        ui->groupBoxFK->setStyleSheet("QLabel{font:10pt\"Courier\";color:black};");
+
         ui->groupBoxIK->setEnabled(false);
+        ui->groupBoxIK->setStyleSheet("QGroupBox{font:8pt\"Courier\";color:grey};");
+        ui->groupBoxIK->setStyleSheet("QLabel{font:8pt\"Courier\";color:grey};");
+
+        ui->pushButtonIKrun->setEnabled(false);
+        ui->spinBoxX->setEnabled(false);
+        ui->spinBoxY->setEnabled(false);
+        ui->spinBoxZ->setEnabled(false);
+
+        updateGroupboxFK();
+        viewer.myTeapot.bSelected = false;
+        viewer.update();
         }
 }
 
 void MainWindow::on_radioButtonIK_toggled(bool checked)
 {
     if (checked) {
-        ui->groupBoxFK->setEnabled(false);
         ui->groupBoxIK->setEnabled(true);
+        ui->groupBoxIK->setStyleSheet("QGroupBox{font:10pt\"Courier\";color:black};");
+        ui->groupBoxIK->setStyleSheet("QLabel{font:10pt\"Courier\";color:black};");
+
+        ui->groupBoxFK->setEnabled(false);
+        ui->groupBoxFK->setStyleSheet("QGroupBox{font:8pt\"Courier\";color:grey};");
+        ui->groupBoxFK->setStyleSheet("QLabel{font:8pt\"Courier\";color:grey};");
+
+        if (!ui->checkBoxDemo->isChecked()) {
+            ui->pushButtonIKrun->setEnabled(true);
+            ui->spinBoxX->setEnabled(true);
+            ui->spinBoxY->setEnabled(true);
+            ui->spinBoxZ->setEnabled(true);
+            }
+        updateGroupboxIK();
+
+        viewer.myTeapot.bSelected = true;
+        viewer.update();
         }
 }
 
@@ -313,54 +353,184 @@ void MainWindow::on_radioButtonIK_toggled(bool checked)
 void MainWindow::on_checkBoxDemo_clicked()
 {
     if (ui->checkBoxDemo->isChecked()) {
-        if (!timerDemo) {
-            timerDemo = new QTimer;
+        if(timerRun.isActive()) { //Stop runRobotXYZ
+            ui->pushButtonIKrun->setText("Run");
+            timerRun.stop();
+            disconnect(&timerRun);
             }
-        timerDemo->start(200);
+        ui->pushButtonIKrun->setEnabled(false);
+        ui->spinBoxX->setEnabled(false);
+        ui->spinBoxY->setEnabled(false);
+        ui->spinBoxZ->setEnabled(false);
 
-        connect(timerDemo, &QTimer::timeout, [=](){
-            static int iBdiff    = 15;
-            static int iArm1diff = 10;
-            static int iArm2diff = 10;
-            int iBase = ui->horizontalSlider1->value();
-            if (ui->checkBoxCrazy->isChecked())
-                iBase = qrand()%360 -180;
-            else
-                iBase += iBdiff;
+        timerDemo.stop();
+        if (ui->checkBoxCrazy->isChecked())
+            timerDemo.start(1000.0/viewer.currentFPS()); //Max Herz
+        else
+            timerDemo.start(1000/8); //8Hz
 
-            if ( (iBase > ui->horizontalSlider1->maximum())
-              || (iBase < ui->horizontalSlider1->minimum()) )
-                iBdiff = -iBdiff;
+        //test go
+        v0.x = iRobotX;
+        v0.y = iRobotY;
+        v0.z = iRobotZ;
+        v1.x = ui->spinBoxX->value();
+        v1.y = ui->spinBoxY->value();
+        v1.z = ui->spinBoxZ->value();
 
-            on_horizontalSlider1_sliderMoved(iBase);
 
-            int iArm1 = ui->horizontalSlider2->value();
-            if (ui->checkBoxCrazy->isChecked())
-                iArm1 = qrand()%180-90;
-            else
-                iArm1 += iArm1diff;
-            if ((iArm1 > 90) || (iArm1 < -90) )
-                iArm1diff = -iArm1diff;
-            on_horizontalSlider2_sliderMoved(iArm1);
-
-            int iArm2 = ui->horizontalSlider3->value();
-            if (ui->checkBoxCrazy->isChecked())
-                iArm2 = qrand()%180-90;
-            else
-                iArm2 += iArm2diff;
-            if ((iArm2 > 90) || (iArm2 < -90) )
-                iArm2diff = -iArm2diff;
-            on_horizontalSlider3_sliderMoved(iArm2);
-            });
         }
-    else {
-        //disconnect(timerDemo);
-        if (timerDemo) {
-            timerDemo->stop();
-            }
+  else {
+        ui->pushButtonIKrun->setEnabled(true);
+        ui->spinBoxX->setEnabled(true);
+        ui->spinBoxY->setEnabled(true);
+        ui->spinBoxZ->setEnabled(true);
 
-        viewer->myRobot->idSelected = E4_NONE;
-        viewer->update();
         ui->checkBoxCrazy->setCheckState(Qt::Unchecked);
+        timerDemo.stop();
+
+        viewer.myRobot.idSelected = E4_NONE;
+        viewer.update();
+        viewer.displayMessage("");
         }
 }
+
+void MainWindow::on_checkBoxTeapot_toggled(bool checked)
+{
+    if (checked)
+        viewer.myTeapot.bShow = true;
+    else
+        viewer.myTeapot.bShow = false;
+    viewer.update(); //imediatly updates
+}
+
+/*
+ * on_XYZ_Changed()
+ *
+ *  Do Inverse Kinematics calculation, update Robot alpha,beta,gamma
+ *  Move robot and teapot positions
+ *
+ *
+ */
+
+void MainWindow::on_XYZ_Changed()
+{
+    qreal x = iRobotX/1000.0;
+    qreal y = iRobotY/1000.0;
+    qreal z = iRobotZ/1000.0;
+    qreal z0= viewer.myRobot.fSegLen[E0_BASE];  //0.2
+    qreal L1= viewer.myRobot.fSegLen[E1_ARM1];  //0.5
+    qreal L2= viewer.myRobot.fSegLen[E2_ARM2];  //0.3
+    if (distance(x, y) > (L1+L2))  { //Unreachable! Distance of (x,y) longer than L1+L2 !!!
+        ui->labelIKstatus->setText("!!! Unreachable >_< !!!");
+        return;
+        }
+    //if (z<z0) return;   //Unreachable! z lower than base!!!
+    ui->labelIKstatus->setText("");
+
+    qreal Alpha, Beta, Gamma;
+    XYZ2AlphaBetaGamma(x, y, z-z0, L1, L2, &Alpha, &Beta, &Gamma);
+    if (qIsNaN(Alpha) || qIsNaN(Beta) || qIsNaN(Gamma)) { bIKerror=true; return;} //CosinLaw return NaN!!! Bye-Bye!
+    bIKerror=false;
+
+    rRobotAlpha = 90+Alpha; //YZ plane back to XYZ, Need 90degree rotation on Alpha
+    rRobotBeta  = Beta;
+    rRobotGamma = Gamma;
+    //rRobotAlpha, rRobotBeta, rRobotGamma changed
+    updateGroupboxFK();
+    updateRobotByAlphaBetaGamma(rRobotAlpha, rRobotBeta, rRobotGamma);
+
+    //iRobotX, iRobotY, iRobotZ changed!
+    viewer.myTeapot.bSelected = true;
+    updateGroupboxIK();
+    updateTeapotByXYZ(iRobotX, iRobotY, iRobotZ);
+}
+
+/*
+ * IK Position Moved X(-999,999) Y(-999,999) Z(0,999)
+ *
+ *
+ */
+void MainWindow::on_sliderIK_X_sliderMoved(int position)
+{
+    if (iRobotX == position) return;
+    qDebug() << Q_FUNC_INFO << position;
+
+    iRobotX = position;
+    ui->spinBoxX->setValue(iRobotX);
+
+    on_XYZ_Changed();
+}
+
+void MainWindow::on_sliderIK_Y_sliderMoved(int position)
+{
+    if (iRobotY == position) return;
+    qDebug() << Q_FUNC_INFO << position;
+
+
+    iRobotY = position;
+    ui->spinBoxY->setValue(iRobotY);
+
+    on_XYZ_Changed();
+}
+
+void MainWindow::on_sliderIK_Z_sliderMoved(int position)
+{
+    if (iRobotZ == position) return;
+    qDebug() << Q_FUNC_INFO << position;
+
+
+    iRobotZ = position;
+    ui->spinBoxZ->setValue(iRobotZ);
+
+    on_XYZ_Changed();
+}
+
+void MainWindow::on_pushButtonIKrun_clicked()
+{
+static bool bRun= false;
+
+    if (timerDemo.isActive()) return; //Don't run if in demo mode
+
+    bRun = !bRun;
+    if(!bRun) {
+        ui->pushButtonIKrun->setText("Run");
+        timerRun.stop();
+        disconnect(&timerRun);
+        }
+    int iX0 = iRobotX;
+    int iY0 = iRobotY;
+    int iZ0 = iRobotZ;
+    int iX = ui->spinBoxX->value();
+    int iY = ui->spinBoxY->value();
+    int iZ = ui->spinBoxZ->value();
+
+    if (  (iX != ui->sliderIK_X->value())
+       || (iY != ui->sliderIK_Y->value())
+       || (iZ != ui->sliderIK_Z->value()) ) {
+        qreal d = distance(iX, iY);
+        qreal L0   = viewer.myRobot.fSegLen[E1_ARM1]*1000;
+        qreal L1   = viewer.myRobot.fSegLen[E2_ARM2]*1000;
+        if (d > (L0+L1) ) {
+            ui->labelIKstatus->setText("!!! Unreachable >_< !!!");
+            }
+        else {
+            ui->labelIKstatus->setText("");
+            //Update new XYZ
+            //iRobotX = iX;
+            //iRobotY = iY;
+            //iRobotZ = iZ;
+            //on_XYZ_Changed();
+            ui->pushButtonIKrun->setText("Stop");
+            v0.x= iRobotX;
+            v0.y= iRobotY;
+            v0.z= iRobotZ;
+            v1.x= ui->spinBoxX->value();
+            v1.y= ui->spinBoxY->value();
+            v1.z= ui->spinBoxZ->value();
+            connect(&timerRun, SIGNAL(timeout()), this, SLOT(runRobotXYZ()));
+            timerRun.start(150);
+            }
+        }
+}
+
+

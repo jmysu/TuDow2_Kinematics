@@ -8,14 +8,19 @@ QT       += core gui xml opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = myGLKinematics
+TARGET = TuDow2_Kinematics
 TEMPLATE = app
 
+#-------------------------------------------------
+#V0.9.2 Add selected names
+VERSION = 0.9.2    # major.minor.patch
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += APP_NAME=\"\\\"$$TARGET\\\"\"
+DEFINES += APP_VERSION=\"\\\"$$VERSION\\\"\"
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -30,7 +35,9 @@ SOURCES += \
     gl_viewer.cpp \
     kinematics.cpp \
     gl_teapot.cpp \
-    gl_robot.cpp
+    gl_robot.cpp \
+    mainwindow_utility.cpp \
+    gl_particle.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -38,7 +45,8 @@ HEADERS += \
     kinematics.h \
     gl_teapotdata.h \
     gl_teapot.h \
-    gl_robot.h
+    gl_robot.h \
+    gl_particle.h
 
 FORMS += \
         mainwindow.ui
@@ -59,5 +67,9 @@ else:unix: LIBS += -L$$PWD/../../libQGLViewer/QGLViewer/ -lQGLViewer
 INCLUDEPATH += $$PWD/../../libQGLViewer/QGLViewer
 DEPENDPATH += $$PWD/../../libQGLViewer/QGLViewer
 
-#For Mac: remember to add QGLViewer framework path to DYLD_FRAMEWORK_PATH
 #For Windows: remember copy QGLViewerxx.dll to Windows/System32
+#For Mac: remember to add QGLViewer framework path to DYLD_FRAMEWORK_PATH
+macx|darwin-g++ {#for lolocating OpenGL/glu.h
+    # Or whatever exists in /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
+    QMAKE_MAC_SDK = macosx10.14
+}

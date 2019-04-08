@@ -1,4 +1,9 @@
-
+﻿/* kinematics.cpp
+ *
+ * See  https://github.com/jmysu/TuDow2_Kinematics
+ *      https://github.com/jmysu/TuDow2_Kinematics/tree/master/IK
+ *
+ */
 #include "kinematics.h"
 
 qreal rad(qreal d)
@@ -124,31 +129,51 @@ qreal KposYfromAnglesRad(qreal rt0, qreal rt1, qreal l0, qreal l1)
  *          **************** (x,y)
  *               dist=c
  *
+ * It will have two positive solutions if b sin γ < c < b,
+ * only one positive solution if c = b sin γ,
+ * and no solution if c < b sin γ or c ≥ b.
  */
-qreal lawOfCosines(qreal a, qreal b, qreal c)
+qreal CosinLaw(qreal a, qreal b, qreal c)
 {
-    return qAcos((a*a + b*b - c*c) / (2 * a * b));
+    qreal r = (a*a + b*b - c*c) / (2 * a * b);
+    qreal rr= qAcos(r);
+    //qDebug() << "lawOfCosine" << a << b << c;
+    //qDebug() << " a^2+b^2-c^2/2ab" << r;
+    //qDebug() << " ACos()" << rr;
+    QString t;
+    t.sprintf("ConsinLaw(%-6.3f,%-6.3f,%-6.3f)=%-6.3f", a,b,c, rr);
+    qDebug() << t;
+
+    return rr;
 }
 
-qreal IKanglesA1(qreal x, qreal y, qreal len1, qreal len2)
+qreal IKradA1(qreal x, qreal y, qreal len1, qreal len2)
 {
+//qDebug() << Q_FUNC_INFO << x << y << len1 << len2;
     //get the length of line dist.
     qreal dist = distance(x, y);
+
     //Calculating angle D1 is trivial. Atan2 is a modified arctan() function that returns unambiguous results.
     qreal D1 = qAtan2(y, x);
     //D2 can be calculated using the law of cosines where a = dist, b = len1, and c = len2.
-    qreal D2 = lawOfCosines(dist, len1, len2);
+    qreal D2 = CosinLaw(dist, len1, len2);
 
     //Then A1 is simply the sum of D1 and D2.
     qreal A1 = D1 + D2;
 
     //A2 can also be calculated with the law of cosine, but this time with a = len1, b = len2, and c = dist.
-    //qreal A2 = lawOfCosines(len1, len2, dist);
+    qreal A2 = CosinLaw(len1, len2, dist);
+
+//QString t;
+//t.sprintf("x,y distance (%6.3f,%6.3f) %6.3f", x,y, dist);
+//qDebug() << t;
+//t.sprintf("D1:%6.3f D2:%6.3f, A1=%6.3f A2=%6.3f", qRadiansToDegrees(D1),qRadiansToDegrees(D2), qRadiansToDegrees(A1),  qRadiansToDegrees(A2));
+//qDebug() << t;
 
     return A1;
 }
 
-qreal IKanglesA2(qreal x, qreal y, qreal len1, qreal len2)
+qreal IKradA2(qreal x, qreal y, qreal len1, qreal len2)
 {
     //get the length of line dist.
     qreal dist = distance(x, y);
@@ -161,7 +186,7 @@ qreal IKanglesA2(qreal x, qreal y, qreal len1, qreal len2)
     //qreal A1 = D1 + D2;
 
     //A2 can also be calculated with the law of cosine, but this time with a = len1, b = len2, and c = dist.
-    qreal A2 = lawOfCosines(len1, len2, dist);
+    qreal A2 = CosinLaw(len1, len2, dist);
 
     return A2;
 }
@@ -171,7 +196,7 @@ qreal len2=10;
 void testXY(qreal x, qreal y)
 {
     qDebug() <<"\t"<< QString("Move to (%1,%2) => A1=%3° A2=%4°")
-                .arg(x).arg(y).arg(deg(IKanglesA1(x,y,len1,len2))).arg(deg(IKanglesA2(x,y,len1,len2)));
+                .arg(x).arg(y).arg(deg(IKradA1(x,y,len1,len2))).arg(deg(IKradA2(x,y,len1,len2)));
 }
 void testTheta01(qreal t0, qreal t1)
 {
@@ -213,3 +238,67 @@ void testIK()
 }
 
 
+/* XYZ2AlphaBetaGamma()
+ *
+ * Input: XYZ
+ * Output: Alpha Beta Gamma
+ *
+ * https://github.com/jmysu/TuDow2_Kinematics/blob/master/IK/readme.md
+ */
+void XYZ2AlphaBetaGamma(qreal x, qreal y, qreal z, qreal L1, qreal L2, qreal *Alpha, qreal *Beta, qreal *Gamma)
+{
+    qDebug() << Q_FUNC_INFO;
+
+    qreal alpha = qAtan2(y,x);
+    *Alpha      = qRadiansToDegrees(alpha);
+
+    qreal r1    = distance(x, y);
+    qreal r2    = z;
+    qreal r3    = distance(r1, r2);
+    qreal A1    = CosinLaw(r3, L1, L2);
+    qreal A2    = CosinLaw(L1, L2, r3);
+    qreal Cr2   = qAtan2(r1, r2);   //qAtan2 got r,r2 swapped vs Excel Atan2(r2, r1)
+                                    //QTBUG-12515 qAtan2 calls atan2/atan2f with arguments in wrong order
+    *Beta       = qRadiansToDegrees(Cr2-A1);
+    *Gamma      = 180.0 - qRadiansToDegrees(A2);
+}
+/*
+bool validateIK(qreal x, qreal y, qreal z, qreal z0, qreal L1, qreal L2)
+{
+    qDebug() << "\n   " << Q_FUNC_INFO << x << y << z;
+    QString t;
+
+    qreal alpha = qAtan2(y, x);
+
+    qreal r1 = distance(x, y);
+    qreal r2 = z - z0;
+    qreal r3 = distance(r1, r2);
+    t.sprintf("r1,r2,r3: %6.3f, %6.3f, %6.3f", r1, r2, r3);
+    qDebug() << t;
+
+    qreal A1= CosinLaw(r3, L1, L2);
+    qDebug() << "A1:" << A1 << qRadiansToDegrees(A1);
+
+    qreal A2= CosinLaw(L1, L2, r3);
+    qDebug() << "A2:" << A2 << qRadiansToDegrees(A2);
+
+    qreal degAlpha= qRadiansToDegrees(alpha);
+    t.sprintf("Alpha=%6.1f°", degAlpha);
+    qDebug() << t;
+
+    qreal PR2= qAtan2(r1, r2); //***!!!
+    qreal beta= PR2-A1;
+    qreal degBeta = qRadiansToDegrees(beta);
+    t.sprintf("Beta =%6.1f°", degBeta );
+    qDebug() << t;
+
+    qreal degGamma= 180.0-qRadiansToDegrees(A2);
+    t.sprintf("Gamma=%6.1f°", degGamma);
+    qDebug() << t;
+    t.sprintf("Adjusted: α=%4d° β=%4d° γ=%4d°",
+                //qRound(90.0+degAlpha), qRound(90.0-degBeta), qRound(-degGamma));
+                qRound(90.0+degAlpha), qRound(degBeta), qRound(degGamma));
+    qDebug() << t;
+    return true;
+}
+*/
